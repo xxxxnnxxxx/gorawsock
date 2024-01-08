@@ -138,6 +138,7 @@ type TCPSock struct {
 	MSS                                        uint16 // 最大报文长度
 	WinSize                                    uint16 // 窗口大小
 	RecvdWinSize                               uint16 // 接收窗口大小
+	Step                                       uint32 // seq/ack 步进
 }
 
 type UDPSock struct {
@@ -180,6 +181,7 @@ func NewSocket() *Socket {
 		DataBuf:        utils.NewBuffer(),
 		NotifyCallback: nil,
 	}
+	result.TCPSock.Step = 1 // 步进默认为1(符合常规tcp协议规则)
 	result.TCPSock.Status = TS_UNKNOWN
 	result.Options = make([]layers.TCPOption, 0)
 	return result
@@ -193,6 +195,10 @@ func CreateSocket(socketType int,
 	result.LocalPort = localPort
 
 	return result
+}
+
+func (p *Socket) SetStep(step uint32) {
+	p.Step = step
 }
 
 func (p *Socket) Clone() *Socket {
@@ -248,7 +254,7 @@ func (p *Socket) GetNextSeq() uint32 {
 		// ack 不消费顺序号
 		if p.PreSentSignal != TCP_SIGNAL_ACK {
 			if p.PreLenOfSent == 0 {
-				return p.SeqNum + 1
+				return p.SeqNum + p.Step
 			} else {
 				return p.SeqNum + p.PreLenOfSent
 			}
@@ -266,7 +272,7 @@ func (p *Socket) UpdateSeqNum() {
 			if p.PreLenOfSent > 0 {
 				p.SeqNum += p.PreLenOfSent
 			} else {
-				p.SeqNum++
+				p.SeqNum += p.Step
 			}
 		}
 
@@ -280,7 +286,7 @@ func (p *Socket) UpdateAckNum() {
 			if p.LenOfRecved > 0 {
 				p.AckNum += p.LenOfRecved
 			} else {
-				p.AckNum++
+				p.AckNum += p.Step
 			}
 		}
 	}

@@ -250,9 +250,14 @@ func (p *ProtocolObject) Bind(s *Socket) {
 	p.originSocket.SeqNum = generateRandowSeq()
 }
 
-func (p *ProtocolObject) Startup() error {
+func (p *ProtocolObject) Startup(step uint32) error {
 	if p.originSocket == nil {
 		p.originSocket = NewSocket()
+		if step == 0 {
+			p.originSocket.SetStep(1)
+		} else {
+			p.originSocket.SetStep(step)
+		}
 		p.originSocket.SocketType = p.SocketType
 		p.originSocket.Handle = p.DevHandle
 		p.originSocket.LocalIP = net.ParseIP(p.AdapterInfo.Addrs[0].IP.String())
