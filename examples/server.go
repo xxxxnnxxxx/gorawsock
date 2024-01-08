@@ -14,7 +14,7 @@ func main() {
 	}
 	socket := gorawsock.CreateSocket(gorawsock.SocketType_STREAM, 8000)
 	tcpserver.Bind(socket)
-	err = tcpserver.Startup()
+	err = tcpserver.Startup(0)
 	if err != nil {
 		fmt.Println(err)
 		tcpserver.CloseAllofSockets()

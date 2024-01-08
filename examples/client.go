@@ -13,7 +13,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	err = client.Startup()
+	err = client.Startup(0)
 	if err != nil {
 		fmt.Println(err)
 		client.CloseAllofSockets()

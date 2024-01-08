@@ -15,7 +15,7 @@ func main() {
 	}
 	socket := gorawsock.CreateSocket(gorawsock.SocketType_DGRAM, 12000)
 	udpserver.Bind(socket)
-	err = udpserver.Startup()
+	err = udpserver.Startup(0)
 	if err != nil {
 		fmt.Println(err)
 		udpserver.CloseAllofSockets()
